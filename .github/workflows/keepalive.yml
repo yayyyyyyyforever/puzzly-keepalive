@@ -1,0 +1,34 @@
+# Pings the public Puzzly API health endpoint so Render's free web service
+# does not sleep after ~15 minutes of idle. No secrets; URL is public.
+name: Keep puzzly-api awake
+
+on:
+  schedule:
+    # Every 10 minutes. GitHub cron can lag a few minutes; gaps should stay
+    # under Render's ~15 minute idle sleep window.
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping healthz
+        run: |
+          set -euo pipefail
+          URL="https://puzzly-api.onrender.com/api/healthz"
+          # Retry a few times in case the instance is mid-wake.
+          for i in 1 2 3 4 5; do
+            echo "Attempt $i: GET $URL"
+            if curl -fsS --max-time 60 -o /tmp/healthz.body -w "HTTP %{http_code} in %{time_total}s\n" "$URL"; then
+              echo "Body:"
+              cat /tmp/healthz.body
+              echo
+              exit 0
+            fi
+            echo "Attempt $i failed; sleeping 15s"
+            sleep 15
+          done
+          echo "All attempts failed"
+          exit 1
