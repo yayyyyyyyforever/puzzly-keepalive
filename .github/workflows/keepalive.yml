@@ -4,9 +4,9 @@ name: Keep puzzly-api awake
 
 on:
   schedule:
-    # Every 10 minutes. GitHub cron can lag a few minutes; gaps should stay
+    # Every 5 minutes. GitHub cron can lag a few minutes; gaps should stay
     # under Render's ~15 minute idle sleep window.
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
