@@ -3,7 +3,7 @@
 Free GitHub Actions pings that keep the Puzzly Render free-tier API awake.
 
 - Target: `https://puzzly-api.onrender.com/api/healthz`
-- Schedule: every 5 minutes (`*/5 * * * *`)
+- Schedule: about every 5 minutes (cron minutes 2,7,12,…)
 - Cost: $0 (public repo → unlimited Actions minutes for this workload)
 - No secrets in workflows
 

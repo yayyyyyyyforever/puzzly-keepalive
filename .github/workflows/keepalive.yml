@@ -4,9 +4,8 @@ name: Keep puzzly-api awake
 
 on:
   schedule:
-    # Every 5 minutes. GitHub cron can lag a few minutes; gaps should stay
-    # under Render's ~15 minute idle sleep window.
-    - cron: '*/5 * * * *'
+    # Offset minutes (avoid :00/:05/:10 pileups). Gaps stay under Render's ~15m sleep.
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -18,7 +17,6 @@ jobs:
         run: |
           set -euo pipefail
           URL="https://puzzly-api.onrender.com/api/healthz"
-          # Retry a few times in case the instance is mid-wake.
           for i in 1 2 3 4 5; do
             echo "Attempt $i: GET $URL"
             if curl -fsS --max-time 60 -o /tmp/healthz.body -w "HTTP %{http_code} in %{time_total}s\n" "$URL"; then
